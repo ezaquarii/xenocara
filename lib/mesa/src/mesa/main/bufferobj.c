@@ -49,6 +49,7 @@
 #include "util/u_memory.h"
 #include "util/set.h"
 
+#include <stdio.h>
 
 /* Debug flags */
 /*#define VBO_DEBUG*/
@@ -3510,8 +3511,11 @@ map_buffer_range(struct gl_context *ctx, struct gl_buffer_object *bufObj,
    }
 
    assert(ctx->Driver.MapBufferRange);
+   printf("%s:%d: %s: mapping\n", __FILE__, __LINE__, __FUNCTION__);
    void *map = ctx->Driver.MapBufferRange(ctx, offset, length, access, bufObj,
                                           MAP_USER);
+   printf("%s:%d: %s: map: %llu\n", __FILE__, __LINE__, __FUNCTION__, (unsigned long long)map);
+   
    if (!map) {
       _mesa_error(ctx, GL_OUT_OF_MEMORY, "%s(map failed)", func);
    }
@@ -3720,6 +3724,7 @@ _mesa_MapBuffer(GLenum target, GLenum access)
                                   "glMapBuffer"))
       return NULL;
 
+   printf("%s:%d: %s\n", __FILE__, __LINE__, __FUNCTION__);
    return map_buffer_range(ctx, bufObj, 0, bufObj->Size, accessFlags,
                            "glMapBuffer");
 }

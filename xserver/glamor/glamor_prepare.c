@@ -24,6 +24,8 @@
 #include "glamor_prepare.h"
 #include "glamor_transfer.h"
 
+#include <stdio.h>
+
 /*
  * Make a pixmap ready to draw with fb by
  * creating a PBO large enough for the whole object
@@ -130,6 +132,7 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
         else
             gl_access = GL_READ_ONLY;
 
+	printf("%s:%d: %s\n", __FILE__, __LINE__, __FUNCTION__);
         pixmap->devPrivate.ptr = glMapBuffer(GL_PIXEL_PACK_BUFFER, gl_access);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     }
