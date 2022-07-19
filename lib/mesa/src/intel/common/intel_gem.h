@@ -26,6 +26,7 @@
 
 #include "drm-uapi/i915_drm.h"
 
+#include <stdio.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -71,7 +72,9 @@ intel_ioctl(int fd, unsigned long request, void *arg)
     int ret;
 
     do {
+        printf("%s:%d: %s: enter, request %lu\n", __FILE__, __LINE__, __FUNCTION__, request);
         ret = ioctl(fd, request, arg);
+	printf("%s:%d: %s: exit, ret: %d, err: %d\n", __FILE__, __LINE__, __FUNCTION__, ret, errno);
     } while (ret == -1 && (errno == EINTR || errno == EAGAIN));
     return ret;
 }

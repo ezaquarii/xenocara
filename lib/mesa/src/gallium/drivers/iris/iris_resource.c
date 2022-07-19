@@ -2141,8 +2141,10 @@ iris_map_direct(struct iris_transfer *map)
    struct pipe_box *box = &xfer->box;
    struct iris_resource *res = (struct iris_resource *) xfer->resource;
 
+   printf("%s:%d: %s: enter\n", __FILE__, __LINE__, __FUNCTION__);
    void *ptr = iris_bo_map(map->dbg, res->bo, xfer->usage & MAP_FLAGS);
-
+   printf("%s:%d: %s: map = %llu\n", __FILE__, __LINE__, __FUNCTION__, (unsigned long long)ptr);
+   
    if (res->base.b.target == PIPE_BUFFER) {
       xfer->stride = 0;
       xfer->layer_stride = 0;

@@ -431,7 +431,9 @@ iris_bo_wait_syncobj(struct iris_bo *bo, int64_t timeout_ns)
    if (bo->idle)
       return 0;
 
+   printf("%s:%d: %s: locking\n", __FILE__, __LINE__, __FUNCTION__);
    simple_mtx_lock(&bufmgr->bo_deps_lock);
+   printf("%s:%d: %s: locked\n", __FILE__, __LINE__, __FUNCTION__);
 
    uint32_t handles[bo->deps_size * IRIS_BATCH_COUNT * 2];
    int handle_count = 0;
@@ -462,7 +464,9 @@ iris_bo_wait_syncobj(struct iris_bo *bo, int64_t timeout_ns)
       .flags = DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL,
    };
 
+   printf("%s:%d: %s: intel_ioctl enter\n", __FILE__, __LINE__, __FUNCTION__);
    ret = intel_ioctl(bufmgr->fd, DRM_IOCTL_SYNCOBJ_WAIT, &args);
+   printf("%s:%d: %s: intel_ioctl exit: %d\n", __FILE__, __LINE__, __FUNCTION__, ret);
    if (ret != 0) {
       ret = -errno;
       goto out;
@@ -478,6 +482,7 @@ iris_bo_wait_syncobj(struct iris_bo *bo, int64_t timeout_ns)
 
 out:
    simple_mtx_unlock(&bufmgr->bo_deps_lock);
+   printf("%s:%d: %s: unlocked\n", __FILE__, __LINE__, __FUNCTION__);   
    return ret;
 }
 
@@ -1408,7 +1413,9 @@ bo_wait_with_stall_warning(struct pipe_debug_callback *dbg,
    bool busy = dbg && !bo->idle;
    double elapsed = unlikely(busy) ? -get_time() : 0.0;
 
+   printf("%s:%d: %s: enter\n", __FILE__, __LINE__, __FUNCTION__);
    iris_bo_wait_rendering(bo);
+   printf("%s:%d: %s: exit\n", __FILE__, __LINE__, __FUNCTION__);
 
    if (unlikely(busy)) {
       elapsed += get_time();
@@ -1559,12 +1566,14 @@ iris_bo_map(struct pipe_debug_callback *dbg,
       map = bo->real.map;
    }
 
-   DBG("iris_bo_map: %d (%s) -> %p\n",
-       bo->gem_handle, bo->name, bo->real.map);
+   printf("%s:%d: iris_bo_map: %d (%s) -> %p\n", __FILE__, __LINE__,
+	  bo->gem_handle, bo->name, bo->real.map);
    print_flags(flags);
 
    if (!(flags & MAP_ASYNC)) {
+      printf("%s:%d: %s: bo_wait_with_stall_warning enter\n", __FILE__, __LINE__, __FUNCTION__);
       bo_wait_with_stall_warning(dbg, bo, "memory mapping");
+      printf("%s:%d: %s: bo_wait_with_stall_warning exit\n", __FILE__, __LINE__, __FUNCTION__);
    }
 
    return map;
@@ -1591,7 +1600,9 @@ iris_bo_wait_gem(struct iris_bo *bo, int64_t timeout_ns)
       .timeout_ns = timeout_ns,
    };
 
+   printf("%s:%d: %s: intel_ioctl enter\n", __FILE__, __LINE__, __FUNCTION__);
    int ret = intel_ioctl(bufmgr->fd, DRM_IOCTL_I915_GEM_WAIT, &wait);
+   printf("%s:%d: %s: intel_ioctl exit: %d\n", __FILE__, __LINE__, __FUNCTION__, ret);
    if (ret != 0)
       return -errno;
 
